@@ -22,7 +22,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group 'id.web.hikmasoft'
-version '1.0-SNAPSHOT'
+version '1.0-RELEASE'
 
 mainClassName = "$moduleName/id.web.hikmasoft.MainApp"
 

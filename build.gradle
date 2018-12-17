@@ -22,7 +22,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group 'id.web.hikmasoft'
-version '1.0-RELEASE'
+version '1.1-RELEASE'
 
 mainClassName = "$moduleName/id.web.hikmasoft.MainApp"
 
@@ -33,4 +33,69 @@ repositories {
 dependencies {
     compile("org.springframework.boot:spring-boot-starter")
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+publishing {
+    publications {
+        mavenPublication(MavenPublication) {
+            from components.java
+            artifact sourcesJar {
+                classifier "sources"
+            }
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+            groupId 'id.web.hikmasoft'
+            artifactId 'springjfx'
+            version project.version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', 'Spring Boot JavaFX Application')
+                root.appendNode('name', 'springjfx')
+                root.appendNode('url', 'https://github.com/babeguru/springjfx')
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.getProperty('bintray.user')
+    key = System.getProperty('bintray.key')
+    publications = ['mavenPublication']
+
+    pkg {
+        repo = 'springjfx'
+        name = 'springjfx'
+        userOrg = 'babeguru'
+        licenses = ['MIT']
+        publish = true
+        vcsUrl = 'https://github.com/babeguru/springjfx.git'
+        version {
+            name = project.version
+            desc = System.getProperty("build.number")
+            released  = new Date()
+        }
+    }
+
+}
+
+artifactory {
+    contextUrl = 'http://oss.jfrog.org'
+    publish {
+        repository {
+            repoKey = 'oss-snapshot-local'
+            username = System.getProperty('bintray.user')
+            password = System.getProperty('bintray.key')
+        }
+        defaults {
+            publications('mavenPublication')
+            publishArtifacts = true
+            publishPom = true
+        }
+    }
+    resolve {
+        repoKey = 'jcenter'
+    }
+    clientConfig.info.setBuildNumber(System.getProperty('build.number'))
 }
